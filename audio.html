@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Audio</title>
+    <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+  </head>
+  <body>
+    <div id="player">
+      <a href="#" class="prev">Prev</a>
+      <audio controls>
+        Your browser does not support HTML 5 Player.
+      </audio>
+      <a href="#" class="next">Next</a>
+      <div class="name">loading...</div>
+    </div>
+    <script>
+      let audio
+      let len
+      let current
+      let playlist = [
+        {
+          name: "New Wave",
+          path: "https://static.bandlab.com/soundbanks/previews/new-wave-kit.ogg"
+        },
+        {
+          name: "Synth Organ",
+          path: "https://static.bandlab.com/soundbanks/previews/synth-organ.ogg"
+        }
+      ]
+
+      const run = (music, player) => {
+        const audioName = document.querySelector(".name")
+        audioName.innerHTML = music.name
+        player.src = music.path
+        audio.load()
+        audio.play()
+      }
+
+      const next = () => {
+        current++
+        if (current > len) current = 0
+      }
+
+      const prev = () => {
+        current--
+        if (current < 0) current = 0
+      }
+
+      const player = () => {
+        const prevBtn = document.querySelector(".prev")
+        const nextBtn = document.querySelector(".next")
+        current = 0
+        audio = document.querySelector("audio")
+        len = playlist.length - 1
+        run(playlist[0], audio)
+
+        audio.addEventListener("ended", e => {
+          next()
+          run(playlist[current], audio)
+        })
+
+        nextBtn.addEventListener("click", e => {
+          e.preventDefault()
+          next()
+          run(playlist[current], audio)
+        })
+
+        prevBtn.addEventListener("click", e => {
+          e.preventDefault()
+          prev()
+          run(playlist[current], audio)
+        })
+      }
+
+      player()
+    </script>
+  </body>
+</html>

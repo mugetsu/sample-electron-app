@@ -2,18 +2,31 @@ const { app, BrowserWindow } = require('electron')
 
 const createWindow = () => {
 	// Create the browser window.
-	const win = new BrowserWindow({
+	const winPosts = new BrowserWindow({
+    x: 100,
+    y: 100,
 		width: 800,
 		height: 600,
 		webPreferences: {
 			nodeIntegration: true
 		}
   })
+  
+  const winAudio = new BrowserWindow({
+		width: 800,
+    height: 600,
+		webPreferences: {
+			nodeIntegration: true
+		}
+	})
 
-  win.loadFile('index.html')
+  winAudio.loadFile('audio.html')
+
+  winPosts.loadFile('posts.html')
 
 	// Open the DevTools.
-  // win.webContents.openDevTools()
+  // winPosts.webContents.openDevTools()
+  // winAudio.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished
