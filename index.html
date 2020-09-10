@@ -7,6 +7,94 @@
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
   </head>
   <body>
-    Hello?
+    <div class="post-wrapper">
+      <div class="sort-wrapper">
+        <select id="sort">
+          <option selected disabled>Default</option>
+          <option value="alphabetical">Alphabetical</option>
+          <option value="userid">User ID</option>
+        </select>
+      </div>
+      <ul id="posts"></ul>
+    </div>
+    <script>
+      const axios = require("axios")
+      const postEl = document.querySelector("#posts")
+      const sortEl = document.querySelector("#sort")
+
+      const sorting = data => {
+        let sortedData = data
+        sortedData = data.sort((a, b) => {
+          const textA = a["title"].toUpperCase()
+          const textB = b["title"].toUpperCase()
+          return textA < textB ? -1 : textA > textB ? 1 : 0
+        })
+        postEl.innerHTML = renderPosts(sortedData)
+      }
+
+      const grouping = data => {
+        let groupedData = data
+        groupedData = data.reduce((result, obj) => {
+          ;(result[obj["userId"]] = result[obj["userId"]] || []).push(obj)
+          return result
+        }, {})
+        postEl.innerHTML = renderPosts(groupedData, "group")
+      }
+
+      const renderPosts = (data, type) => {
+        let list = ""
+        if (!type) {
+          data.forEach(item => {
+            list += `
+                    <li class="post post-${item.id}">
+                      <h2 class="post__title">${item.title}</h2>
+                      <p class="post__body">${item.body}</p>
+                    </li>
+                  `
+          })
+        } else if (type === "group") {
+          for (const [key, value] of Object.entries(data)) {
+            let subList = ""
+            value.forEach(item => {
+              subList += `
+                      <li class="post post-${item.id}">
+                        <h2 class="post__title">${item.title}</h2>
+                        <p class="post__body">${item.body}</p>
+                      </li>
+                    `
+            })
+            list += `
+                    <li class="post-group post-group-${key}">
+                      <h1 class="post-group__title">User ID: ${key}</h1>
+                      <ul>${subList}</ul>
+                    </li>
+                  `
+          }
+        }
+        return list
+      }
+
+      const getPosts = async () => {
+        await axios
+          .get("https://jsonplaceholder.typicode.com/posts")
+          .then(response => {
+            const { data } = response
+            postEl.innerHTML = renderPosts(data)
+            sortEl.addEventListener("change", event => {
+              const val = event.target.value
+              if (val === "alphabetical") {
+                sorting(data)
+              } else if (val === "userid") {
+                grouping(data)
+              }
+            })
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      }
+
+      getPosts()
+    </script>
   </body>
 </html>
