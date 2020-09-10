@@ -1,0 +1,12 @@
+{
+  "name": "electron-app",
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "dev": "electron ."
+  },
+  "devDependencies": {
+    "axios": "^0.20.0",
+    "electron": "^10.1.1"
+  }
+}
